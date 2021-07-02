@@ -51,7 +51,7 @@ function Install(){
 
   ScriptApp.newTrigger("main").timeBased().everyHours(howFrequent).create();
   subject = 'Vaccine Checker Script set for '+icnum +' ('+phnum+').';
-  body = 'Script is set for '+ icnum +' ('+phnum+') for every '+ howFrequent.toString() +' hour(s).'+'Please verify details at https://www.vaksincovid.gov.my/en/check-status/ to avoid errors. For the vaccine checker script code, please visit https://script.google.com/d/1uQxdjwZ_cNMygdZ9atGGgyJQ-0rd80tkC3P8uWnYIxPvs3X3-Q8HKlaP/edit .';
+  body = 'Script is set for '+ icnum +' ('+phnum+') for every '+ howFrequent.toString() +' hour(s).';
   MailApp.sendEmail(receipient,subject,body);
 }
 
@@ -78,11 +78,12 @@ function main() {
     body = 'Server Error, check API';
   }
   if (response.res == 'inprocess') {
-    status = 'OK';
+    status = inprocessemail;
     subject = 'Vaccine appointment in process for '+String(response.appt_name) +'.';
     body = 'Appointment status in process, script is set to automatically check for status of '+ String(response.appt_name) + ' every '+ howFrequent.toString() +' hour(s). Kindly note that your appointment details will only be updated 14 day(s) before your scheduled vaccination date.';
     if (response.appt_difftime1 != "") {
       if (parseInt(response.appt_difftime1) <= 14) {
+        status = 'OK';
         subject = 'Vaccine Appointment in ' + String(response.appt_difftime1) + ' day(s) for '+String(response.appt_name)+'.';
         body = 'Please check MySejahtera App. '+ 'Appointment for ' + String(response.appt_name) + ' ('+String(response.appt_id) +') for 1st dose for date '+ String(response.appt_date1) + ' '+ String(response.appt_time1) + ' at location ' + String(response.appt_facility1) + ' ('+ String(response.appt_location1)+')';
       }
@@ -97,6 +98,7 @@ function main() {
         body = 'Please check MySejahtera App. '+ 'Appointment for ' + String(response.appt_name) + ' ('+String(response.appt_id) +') for 2nd dose for date '+ String(response.appt_date2) + ' '+ String(response.appt_time2) + ' at location ' + String(response.appt_facility2) + ' ('+ String(response.appt_location2)+')';
       }
       if (response.appt_complete2 == "1") {
+        status = 'OK';
         subject = 'Vaccination completed for '+String(response.appt_name);
         body = '2-dose vaccination completed for '+String(response.appt_name)+'. This will be the last email.';
         DeleteAllTriggers();
